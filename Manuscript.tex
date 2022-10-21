@@ -1,0 +1,627 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\documentclass[referee,sn-basic]{sn-jnl}% referee option is meant for double line spacing
+
+%%=======================================================%%
+%% to print line numbers in the margin use lineno option %%
+%%=======================================================%%
+
+%%\documentclass[lineno,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%======================================================%%
+%% to compile with pdflatex/xelatex use pdflatex option %%
+%%======================================================%%
+
+%%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%\documentclass[sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+\documentclass[sn-mathphys]{sn-jnl}% Math and Physical Sciences Reference Style
+%%\documentclass[sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[sn-vancouver]{sn-jnl}% Vancouver Reference Style
+%%\documentclass[sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+%%\documentclass[sn-standardnature]{sn-jnl}% Standard Nature Portfolio Reference Style
+%%\documentclass[default]{sn-jnl}% Default
+%%\documentclass[default,iicol]{sn-jnl}% Default with double column layout
+
+
+\jyear{2022}%
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+
+\begin{document}
+
+\title[SFOD based on Pseudo-Supervised Mean Teacher]{Source-Free Domain Adaptive Object Detection based on Pseudo-Supervised Mean Teacher}
+
+%%=============================================================%%
+%% Prefix	-> \pfx{Dr}
+%% GivenName	-> \fnm{Joergen W.}
+%% Particle	-> \spfx{van der} -> surname prefix
+%% FamilyName	-> \sur{Ploeg}
+%% Suffix	-> \sfx{IV}
+%% NatureName	-> \tanm{Poet Laureate} -> Title after name
+%% Degrees	-> \dgr{MSc, PhD}
+%% \author*[1,2]{\pfx{Dr} \fnm{Joergen W.} \spfx{van der} \sur{Ploeg} \sfx{IV} \tanm{Poet Laureate} 
+%%                 \dgr{MSc, PhD}}\email{iauthor@gmail.com}
+%%=============================================================%%
+
+
+
+\author[1,2,3]{Xing Wei}
+\author*[1]{Ting Bai}\email{baiting@mail.hfut.edu.cn}
+\author[1]{Yan Zhai}
+\author[4]{Lei Chen}
+\author[2]{Hui Luo}
+\author[2,5]{Chong Zhao}
+\author[1,3]{Yang Lu}
+
+
+\affil*[1]{\orgdiv{School of Computer and Information}, \orgname{Hefei University of Technology}, \orgaddress{\street{emerald Road420}, \city{Hefei City}, \postcode{230601}, \state{Anhui Province}, \country{China}}}
+
+\affil[2]{\orgdiv{Intelligent Manufacturing Institute of Hefei University of Technology},  \orgname{Hefei University of Technology}, \orgaddress{\street{emerald Road420}, \city{Hefei City}, \postcode{230051}, \state{Anhui Province}, \country{China}}}
+
+\affil[3]{\orgdiv{Engineering Research Center of Safety Critical Industrial Measurement and Control Technology}, \orgname{Ministry of Education}, \orgaddress{\city{Hefei City}, \postcode{230009}, \state{Anhui Province}, \country{China}}}
+
+\affil[4]{\orgdiv{Institute of Intelligent Machines}, \orgname{Chinese Academy of Sciences}, \orgaddress{\city{Hefei City}, \postcode{230031}, \state{Anhui Province}, \country{China}}}
+
+\affil[5]{\orgdiv{Engineering Quality Education Center of Undergraduate School}, \orgname{Hefei University of Technology}, \orgaddress{\city{Hefei City}, \postcode{230601}, \state{Anhui Province}, \country{China}}}
+%%==================================%%
+%% sample for unstructured abstract %%
+%%==================================%%
+
+\abstract{Domain adaptive object detection refers to training a cross-domain object detector through a large number of labeled source domain datasets and unlabeled target domain datasets and learning the domain invariant features between two domains to reduce or eliminate the domain discrepancy. However, factors such as data privacy protection, limited storage space, and high labor costs often make many source domain labeled samples unavailable in real time situations. In this work, we propose a pseudo-supervised mean teacher model for source-free domain adaptive object detection that alternates between generating pseudo-labels and fine-tuning the model, and utilizes a pixel-level distillation loss method and the weight regularization module for model adaptation. We use the mean teacher model to assist training to achieve object detection task in the source-free domain. Experiments are carried out on multiple datasets such as Cityscapes, Foggy Cityscapes, and SIM10K. Extensive experiments on multiple domain adaptation scenarios show that our method achieves better performance than the baseline (Faster R-CNN) and multiple state-of-the-art domain adaptation methods which require access to source domain data, demonstrating the effectiveness and robustness of the proposed method.}
+
+\keywords{Source-free Object Detection, Transfer Learning, Domain Adaptation}
+
+%%\pacs[JEL Classification]{D8, H51}
+
+%%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
+
+\maketitle
+
+\section{Introduction}\label{sec1}
+
+As an essential and primary computer vision task, Object Detection needs to obtain the position results (rectangular contours and center point coordinates) and category results (tag category and probability) of different objects in the scene image simultaneously. The object detection model based on deep learning has been widely discussed and researched. Focusing on the detection accuracy and speed of the model, researchers have successively proposed RCNN, SPP-Net, YOLO\cite{bochkovskiy2020yolov4} and Faster RCNN\cite{chen2018domain} etc. A typical example is the Faster RCNN, which structurally integrates the four modules of feature extraction, region recommendation, bounding box regression, and classification into one network, and the overall performance has been significantly improved.
+
+
+Domain adaptive object detection is an essential direction in cross-domain object detection, formally proposed at the 2018 CVPR\cite{chen2018domain}. In which, the author draws on the idea of transfer learning, and learns the common domain invariant features of the source and target domain by using labeled data in the source domain and unlabeled data in the target domain. The key to the success of cross-domain tasks is to mine the value of training samples. The solutions can be roughly divided into two categories. The first category is based on the idea of sample generation \cite{hou2021visualizing,kurmi2021domain,li2020model,kim2021domain}, because the training process cannot obtain source domain labeled images, which is not applicable for traditional DA methods\cite{xu2020exploring}, but can use generative adversarial ideas to generate labeled samples of like-source domain or like-target domain. This kind of idea is suitable for single-object samples of cross-domain classification networks, but it still has high challenges for the application of multi-object images. The second category is based on pseudo-label generation\cite{liang2020we,he2020domain} to generate reliable pseudo-labels during training as much as possible. Meanwhile, researchers have proposed several solutions from different perspectives, such as distribution discrepancy, parallel learning, data reconstruction, hybrid mechanism optimization, etc.\cite{han2019image,ben2019demystifying}, which effectively reconcile the contradiction between feature versatility and task specificity.
+
+Fig.\ref{fig1} shows the comparison between our method and the conventional Unsupervised Domain Adaptive(UDA). The traditional UDA method relies on the training of source data, and needs to access the source domain data in the process of cross-domain learning. However, in some practical scenarios, or because of memory storage requirements, data sharing, privacy issues, or other dataset processing issues, the source domain data cannot be accessed, and the feature space cannot be extracted, which hinders training. Our object detection method no longer relies on source data but instead performs domain adaptation of the network by iteratively generating pseudo-labels, introducing a weight regularization module, and a knowledge distillation module.
+
+
+%%%
+%%% Figure 1
+%%%
+\begin{figure}
+	\includegraphics[width=\textwidth]{Img1.eps}
+	\caption{The comparison between conventional Unsupervised Domain Adaptive(UDA) object detection and our idea of source-free domain adaptive object detection.} \label{fig1}
+\end{figure}
+
+At present, UDA has achieved remarkable success in many applications, such as object detection\cite{zheng2020cross,xie2019multi}, sentiment classification\cite{sadr2022acnn,thakkar2022improving}, and natural language processing\cite{gururangan2020don}. UDA Either adopts the idea of adversarial learning\cite{kurmi2021domain,dong2020cscl} to encourage the learned source and target features to be indistinguishable from each other, or minimizes the difference in cross-domain distribution by matching the statistical moments of the distribution\cite{deng2021unbiased,zheng2020cross}, or uses pseudo-labeling techniques\cite{wang2020unsupervised} by exploiting the similar distributions of the source and target domains. Due to privacy protection, limited storage space and other issues\cite{wang2019eavesdrop,wang2020towards}, it may lead to inefficiency and impracticality in practical applications where they have sensitive information. Therefore, the source-free domain adaptation method has achieved a great breakthrough. At present, the application scenarios are mostly reflected in the classification scenarios\cite{liang2020we,kurmi2021domain,yang2020unsupervised}, but there is still a gap in the object detection scene of source-free domain adaptive, and there is a huge room for improvement. In the latest source-free domain adaptive object detection research, \cite{xiong2021source} utilizes the intermediate domain to avoid the distribution imbalance problem, and \cite{zhang2021source} utilizes the style information of batch normalization stored in the pre-trained source model to convert the style features into the class source-like domain. In this paper, we propose a simple and effective method, which utilizes the initialization information of the source model and pseudo-label techniques, and trains the target model with reliable pseudo-labels of target samples in a self-learning manner to reduce the distribution differences between domains, and the effectiveness of our method is shown in experimental comparisons.
+
+To achieve this more challenging task of domain adaptive object detection, this paper proposes a``pseudo-supervised" mean teacher model for source-free domain adaptive object detection, which only needs a pre-trained object detection model in the source domain and an unlabeled target domain dataset, uses the pseudo-label as the ``ground-truth" to complete the ``pseudo-supervised" learning process of the student model for training and generates a detector suitable for the target domain. This paper introduces the MT algorithm framework\cite{deng2021unbiased,liu2021unbiased,he2018adaptive}, which uses two identical models to participate in the training together. The teacher model weight parameters are frozen, and the teacher model parameters are fine-tuned only by the student model's exponential moving average (EMA) method. To overcome the model deviation of the MT model in the cross-domain object detection method, this paper introduces the weight regularization module to learn the feature discrepancy between domains, realizes the feature space alignment of the above two models in pixel-level adaptation through the knowledge distillation method, and penalizes the inconsistency of the predictions of the two models to encourage model robustness.
+
+
+The following are the main contributions of our work:
+
+1. We provide a source-free domain adaptive object detection model and its training mechanism, that is, the pre-trained source domain model and target domain unlabeled data are trained to obtain a detector that achieves precise positioning and classification in the target domain.
+
+2. We use the method of entropy minimization for threshold tuning, iteratively filter the generated pseudo-labels, reduce the entropy of the prediction results, complete the ``pseudo-supervised" learning of the student model, and optimize the weight parameters of the mean teacher model.
+
+3. We propose a weight regularization method to reduce the domain discrepancy between domains and add a distillation loss mechanism to adaptively realize the feature space alignment of the Mean Teacher model at the pixel level, optimize the network structure, and improve model performance.  
+
+The feasibility and effectiveness of the proposed model are verified in the dataset testing in Cityscapes, Pascal VOC and other fields, and the experimental analysis is used as the verification indicator. The organizational structure of this paper is as follows: Section~\ref{sec:sec2} introduces related work, Section~\ref{sec:sec3} presents our method and introduces the model, and Section~\ref{sec:sec4} describes our experiments on different datasets and gives the experimental results of hyperparametric analysis and quantitative analysis. Section~\ref{sec:sec5} gives our concluding conclusion.
+
+
+%
+%=========================================================================================================================
+%
+
+\section{Related work}\label{sec:sec2}
+
+\subsection{Domain Adaptation and Object Detection Domain Adaptation}
+
+As a branch of transfer learning, domain adaptive methods are widely used in deep learning, such as object detection\cite{chen2018domain,liu2021unbiased,he2020domain,saito2019strong}, sentiment classification\cite{sadr2022acnn,thakkar2022improving}, natural language processing\cite{gururangan2020don} and semantic segmentation\cite{chen2022unsupervised,tasar2020colormapgan}.
+In the early related work, the idea of adversarial generation was proposed, and the domain adversarial network framework DANN was introduced to achieve feature-level adaptation between domains. Jinhong et al.\cite{deng2021unbiased} combined feature-level adversarial training to learn domain-invariant representations to generate object-like images of different styles in cross-domain scenarios. Meanwhile, the discrepancy method was proposed. The domain adaptive methods can be summarized into two categories. One is the Generative Adversarial Net(GAN), Ganin et al.\cite{ganin2015unsupervised} proposed the idea of the gradient reversal layer (GRL) and introduced the domain adversarial network framework DANN to achieve feature-level adaptation between domains in early related work. Later, a series of methods were derived based on DANN (for example, conditional domain adversarial network(CDAN)\cite{long2017conditional}, maximum classifier discrepancy(MCD)\cite{tzeng2014deep}). The second category is based on the discrepancy, such as the classic DDC\cite{saito2018maximum} method for unsupervised DA, which uses a kernel function of MMD (Maximum mean discrepancy) to minimize the distance between the source domain and the target domain. The deep adaptive network DAN was developed based on DDC, using multi-core MMD (MK-MMD) to prove a better experimental effect. Table~\ref{table6} summarizes the related references for each research topic in this paper. Deng et al.\cite{deng2021unbiased} first proposed a cross-domain object detection method and designed two domain adaptive modules to eliminate the domain discrepancy between the image-level and instance-level. A consistent regularization method is proposed to learn domain invariant features and complete end-to-end training to improve detection accuracy. Zheng et al.\cite{zheng2020cross} proposed an adaptive feature method from coarse-grained to fine-grained, gradually and accurately aligning the depth features to achieve two-stage cross-domain object detection. Inspired by the MMD method, our work uses pixel-level distillation and a regularization loss strategy to minimize the source and target domain distribution distances, achieve feature alignment, and improve accuracy.
+ 
+ 
+\begin{table}[]
+	\begin{center}{	
+			\caption{Summary of related references}		\label{table6}
+			\begin{tabular}{c|c}
+				\hline
+				Research Topics   	&Summary of Related References 	  \\ \hline
+				
+				Domain Adaptation Object Detection		&\cite{chen2018domain}\cite{zheng2020cross}\cite{liu2021unbiased}\cite{he2020domain}\cite{saito2019strong}\cite{deng2021unbiased}\cite{zhu2019adapting}\cite{he2019multi}	  \\ \hline
+				
+				Source-Free Domain classification network	 		&\cite{kurmi2021domain}\cite{liang2020we}\cite{yang2020unsupervised} \\ \hline
+				
+				Source-Free Domain Object Detection			&\cite{xu2020exploring}\cite{li2020free}\cite{zhang2021source}\cite{xiong2021source}\cite{ganin2015unsupervised}	  \\ \hline
+				
+				Knowledge Distillation		&\cite{liu2020structured}\cite{xu2020exploring}\cite{passalis2018learning}\cite{passalis2020probabilistic}\cite{seo2020federated}\cite{xie2018improving}	  \\ \hline				
+				
+		\end{tabular}}	
+		
+	\end{center}
+\end{table}
+
+
+\subsection{Knowledge Distillation}
+
+In recent years, knowledge distillation\cite{liu2020structured,xu2020exploring} has succeeded in computer vision tasks, mainly due to its ability to extract feature knowledge and realize multiple model compression and acceleration techniques. In recent work, the knowledge distillation strategy can extract knowledge to guide the lightweight student model from the heavyweight teacher model, which has received wide attention and provides new ideas and challenges for computer vision tasks. The mean teacher model, which was first applied in the semi-supervised field, consists of two networks with the same structure (the teacher model and the student model). The student model uses labeled information for supervised training, and the teacher model updates the weights and passes parameters through the exponential moving average (EMA) method of the student model. Therefore, each sample prediction of the teacher model can be considered a combination of the current student model and the earlier version, enhancing its robustness and stability. Passalis et al.\cite{passalis2018learning,passalis2020probabilistic} transferred knowledge by matching the probability distribution in the feature space to transfer teacher knowledge more efficiently. Seo et al.\cite{seo2020federated} proposed that the structural information between samples would be better than the characteristic structure of a single sample and introduced intermediate representation to optimize the performance of the student model. Xie et al.\cite{xie2018improving} applied a distillation strategy to semantic segmentation tasks, which is similar to our method. After the feature extraction, the category probability is assigned to the feature map pixel by pixel. The feature alignment is achieved at the pixel level to better balance experimental efficiency and accuracy. 
+
+
+\subsection{Source-Free Domain Adaptation}
+In the traditional domain adaptive method, the source domain dataset contains a large amount of label information to perform the supervisory task, and the target domain is a dataset with no labels or only a few labels. The target domain is guided by supervised learning of the source domain knowledge. A huge amount of existing work uses source domain labeled datasets, which leads to a massive increase in the annotation of training datasets and the illegal access of private information. So unsupervised DA applications are proposed. The related survey found that the application scenarios of unsupervised DA are primarily applied to classification networks. Liang et al.\cite{liang2020we} proposed a novel self-supervised pseudo-label method to enhance the representation learning of the target domain and introduced the idea of hypothesis transfer learning (HTL), based on ``shared classifier parameters in the target domain and the source domain" as a whole. Kurmi et al.\cite{kurmi2021domain} used a conditional generative adversarial network combined with pre-trained classifier to provide a generative framework to solve the problem of the domain without source datasets. The classifier used pseudo samples with labeled information to adapt to the target domain. Yang et al.\cite{yang2020unsupervised} proposed a cooperative conditional generative adversarial network (3C-GAN) without the source domain dataset, while the generator and prediction model are collaboratively enhanced, and the classification performance is improved.
+
+As far as object detection is concerned, Xiong et al.\cite{xiong2021source} designed an approximation method based on the Law of Large Numbers to obtain the domain perturbation, thereby constructing a super target domain, and using the learning alignment from the super target domain to the target domain to avoid the imbalance problem in cross-domain object detection to a certain extent. Zhang et al.\cite{zhang2021source} proposed a new vision that utilizes the style information of batch normalization stored in a pre-trained source model, converted into source-like style features, to challenge the cross-domain object detection task. However, by analogy with the classification method, the biggest problem is that it cannot directly generate labeled source domain samples, and the idea of source-free joining adversarial generation\cite{ganin2015unsupervised} is challenging to realize. Since each picture in object detection contains multiple labels, it is difficult to use the pre-trained model to generate labeled source domain pictures from noise through the GAN network. Therefore, our work is different from that, instead of directly generating pseudo-samples in the source domain. We propose a source-free domain adaptive object detection based on pseudo-supervised mean teacher, use the mean-teacher model by dynamically updating the confidence threshold, filter the pseudo-labels generated by the teacher model, and ``pseudo-supervised" train the student model, while aligning the predictions from the two models through the consistency regularization between teachers and students\cite{xu2020exploring} to complete the object detection task. The research on domain adaptive object detection without source data is still in its infancy, and there is enormous room for performance improvement.
+
+
+\begin{table}[]
+	\begin{center}{	
+			\caption{Glossary of symbols}		\label{table5}
+			\begin{tabular}{c|c}
+				\hline
+				Symbols   	&Description 	  \\ \hline
+				${{D}_{t}}$			&The Object detection in target domain	  \\ \hline
+				$x_{i}^{S}$			&Group of samples on student model with noise	  \\ \hline
+				$x_{i}^{T}$			&Group of samples on teacher model with noise	  \\ \hline
+				$Y_{i,k}^{T}$		&Corresponding pseudo-labels for the k-th iteration	  \\ \hline
+				$G_{x}^{S}$			&Relational graph on student model	  \\ \hline
+				$G_{x}^{T}$			&Relational graph on teacher model	  \\ \hline
+				${{L}_{dist}}$		&Distillation loss	  \\ \hline
+				${{h}_{optimal}}$	&The optimal threshold	  \\ \hline
+				${{L}_{\operatorname{Re}}}$		&Region-level prediction loss	  \\ \hline
+				${{L}_{Et}}$		&Inter-graph prediction loss	  \\ \hline
+				${{L}_{In}}$		&Intra-graph prediction loss	  \\ \hline
+				$L$					&The total loss	  \\ \hline
+				
+		\end{tabular}}	
+		
+	\end{center}
+\end{table}
+
+%
+%=========================================================================================================================
+%
+\section{Proposed Method}\label{sec:sec3}
+The overall framework uses the pre-trained source model to initialize the training model(see Fig.\ref{fig2}). Table~\ref{table5} is the glossary of symbols proposed in the paper. First, we provide a set of unlabeled target domain data samples, defined as  ${{D}_{t}}=\left\{ {{x}_{i}} \right\}_{i=1}^{{{N}_{t}}}$, where ${{x}_{i}}$ represents the $ith$ picture in the target domain, and ${{N}_{t}}$ represents the number of pictures in the target domain. Two noisy pictures $x_{i}^{T}$ and $x_{i}^{S}$ are generated by Random Augmentation (RA) and sent to the teacher model and the student model respectively. The teacher model generates pseudo-labels through threshold tuning filtering of entropy minimization. During the following iterative training process of the student model, the $x_{i}^{S}$ with the pseudo-label $Y_{i,k}^{T}$ is used as the input of the student model ${{S}_{\text model}}$, and the two models share the same region proposals generated by the teacher model’s RPN to achieve feature extraction and generate feature maps ${{f}^{T}}$ and ${{f}^{S}}$, where the backbone is based on the ResNet101 network. We use the Weight Regulation strategy to generate a graph relationship($G_{x}^{S},G_{x}^{T}$) to update the weight parameters of the student model of the current layer. The weights of the teacher network are frozen, and the weight parameters are only updated by the exponential moving average(EMA) on the student side. Unlike traditional DA, this training model does not provide the source samples with labeled information but uses a pre-trained source model as supervision. The task takes the pre-trained source model as the training benchmark. Finally, it generates the detector suitable for the target domain to improve the detection performance of the training model in the target domain.  
+
+
+
+%%%
+%%% Figure 2
+%%%
+\begin{figure}
+	\includegraphics[width=\textwidth]{Img2.eps}
+	\caption{Overview of the framework: The overall framework consists of the Teacher model (grey part) and the Student model (yellow part), using the pretrained source model to initialize the student network and the teacher network, and using threshold tuning for entropy minimization to generate iteratively updated pseudo-labels. After a pixel-level knowledge distillation module and a weight regularization module, the final training generates a detector suitable for the target domain.} \label{fig2}
+\end{figure}
+
+
+\subsection{Pixel-level Distillation Module}\label{sec:sec3.1}
+
+In the target domain, we take the image ${{x}_{i}}$ as the target domain, generate two noisy pictures $x_{i}^{T}$ and $x_{i}^{S}$ by Random Augmentation (RA), input the backbone to realize feature extraction and generate feature maps ${{f}^{T}}$and ${{f}^{S}}$. We use the knowledge distillation mechanism to align the class probability of each pixel of the student network at the pixel level. The student model is guided by distillation loss, and the weight parameters are updated by backpropagation to help the student network improve performance.
+
+We define knowledge distillation as the task of assigning category labels to each pixel in the image and achieving feature alignment. The total number of categories is defined as $C$, and the RGB image $I$ of size $W\times H\times 3$ is used as input. After the feature is extracted, the size of the feature map is calculated, which is defined as $W'\times H'\times N$, where $N$ is the number of channels.
+
+Here we treat this task as a collection of independent pixel labeling, and use knowledge distillation to align the class probabilities of each pixel generated by these two networks. The calculation formula of distillation loss is as follows:
+\begin{equation}
+{{L}_{dist}}=\frac{1}{W'\times H'}\cdot \sum\limits_{i\in R}{{{D}_{KL}}\left( p_{i}^{S}\parallel p_{i}^{T} \right)}
+\label{eq:01}
+\end{equation}
+
+Where $p_{i}^{S}$ and $p_{i}^{T}$ represent the category probability of the $ith$ pixel in the feature map in the student model and the teacher model respectively, $R=\{1,2,3,...,{W}'\times {H}'\}$ represents the collection of all pixels, and ${{D}_{KL}}\left( \cdot\right)$ refers to the Kullback-Leibler Divergence between the two class probabilities.
+
+\subsection{Entropy Minimization training}\label{sec:sec3.2}
+
+In object detection tasks, identifying label errors and characterizing label noise are important but easily overlooked tasks. In the training process, there may be a large number of negative samples mixed with positive samples. If false-positive samples are hardly removed, the learning of the student model will be misled, which could result in a failure to achieve good performance. Secondly, choosing a too high or too low confidence threshold will affect training performance due to label noise. Therefore, we need to choose an appropriate confidence threshold to help the model filter the generated pseudo-labels, leaving only the reliable parts to reduce the impact on training performance.
+
+Information entropy is a measure of the degree of disorderliness of a system, measuring the uncertainty contained in the information, and the expression is defined as $H(x)=\sum\limits_{x}{p(x)\log \frac{1}{p(x)}}$. We use information entropy to evaluate the quality of pseudo-labels. The lower the entropy value is, the lower the portion of false-positive samples is, and the higher the reliability value of the pseudo-label is. During the iterative training process of the entire dataset, a reasonable lower entropy value is continuously selected, the confidence threshold is dynamically updated, and reliable pseudo-labels are generated to participate in the training.
+
+
+Based on this task, we introduce the entropy minimization method in the teacher network, use the input sample ${{D}_{t}}=\left\{ {{x}_{i}} \right\}_{i=1}^{{{N}_{t}}}$ after data augmentation to generate $x_{i}^{T}$ as the input of the teacher model ${{T}_{model}}$, which ${{T}_{model}}$ is initialized by the pre-trained model parameters, and then generates pseudo-labels and calculates the corresponding confidence, the formula is as follows:
+\begin{equation}
+\left\{ Y_{i,k}^{T},{{P}_{k}}(x_{i}^{T}) \right\}_{i=1}^{{{N}_{t}}}=\left\{ {{T}_{model}}(x_{i}^{T}\vert h,\Re ) \right\}_{i=1}^{Nt}
+\label{eq:02}
+\end{equation}
+
+where $Y_{i,k}^{T}$ represents the pseudo-label generated by training the teacher model at the $kth$ iteration,  $x_{i}^{T}$represents the unlabeled target domain samples of the input teacher model, and $\Re$  represents the weight parameter of the teacher model at the $kth$ iteration. ${{P}_{k}}(x_{i}^{T})$ represents the confidence calculated by the $kth$ iteration training, which is output by the softmax of the classification branch, the pseudo-label $Y_{i,k}^{T}$ is determined by the argmax of the foreground class probability, if the value is above the confidence threshold $h$, the corresponding box is assigned as the class label with the largest score. Otherwise, it is defined as the background class. $h$ represents the confidence threshold, in which the first training uses a given confidence threshold to generate pseudo-labels, and then iterative training takes the local minimum entropy value to obtain the optimal threshold $h$.
+\begin{equation}
+H({{D}_{t}})=-\frac{1}{{{N}_{t}}}\sum\limits_{i}^{{{N}_{t}}}{\left( \frac{1}{{{n}_{c}}}\sum\limits_{c}^{{{n}_{c}}}{P_{k}^{c}(x_{i}^{T})\log (P_{k}^{c}(x_{i}^{T}))} \right)}
+\label{eq:03}
+\end{equation}
+
+\begin{equation}
+{{h}_{optimal}}=\arg \min (H({{D}_{t}}))
+\label{eq:04}
+\end{equation}
+where $P_{k}^{c}(x_{i}^{T})$ represents the confidence of a category at the $kth$ iteration, ${{n}_{c}}$ represents the total number of categories, and $c$ represents the category.
+
+Based on our model, the teacher outputs reliable pseudo-labels. In the next iterative training, the generated pseudo-labels are used as``ground-truth" to complete the ``pseudo-supervised" learning of the student model. Finally, the weight parameters of the teacher model are fine-tuned through EMA, new pseudo-labels are generated by filtering the confidence threshold obtained in the previous iteration, and the final labels and detectors suitable for the target domain are generated iteratively.
+
+%
+%=============================================================================================================
+%
+\subsection{Weight Regulation Module}\label{sec:sec3.3}
+
+In this module, we introduce a weight regularization method to generate two relational graphs ($G_{x}^{S},G_{x}^{T}$) respectively, and propose three levels of regularization loss. After data augmentation processing of target domain images, we input two different target domain samples as the premise to pursue image-level consistency, guide the student model by backpropagation, and ensure the consistency of prediction between the teacher model and the student model to optimize our cross-domain object detection model. Under the condition of source-free domain data participating in training, the task of cross-domain object detection is accomplished.
+
+%
+%=========================================================================================================================
+%
+\subsubsection{Region-Level Consistency}
+
+Regional-level consistency is introduced to reduce local instance discrepancies, such as light intensity, random noise, and scale, to align regional-level predictions between the vertices of the teacher and student images that share the same spatial location.
+
+For a given unlabeled target domain image, images $x_{i}^{T}$ and $x_{i}^{S}$ with domain noise are generated after random augmentation processing. Subsequently, the two pictures are fed into the two models as input terminals to generate feature maps ${{f}^{T}}$ and ${{f}^{S}}$ respectively. It should be noted that the student model needs to share the region proposals generated by the teacher’s RPN network, which is represented by $R_{x}^{T}$ here, to ensure that the region-level can be measured consistently by the mutual learning between the teacher model and the student model. When the region mapping $f_{r}^{T}$ and $f_{r}^{S}$ of each region are obtained, we can obtain the corresponding probability distributions $d_{r}^{S}=F_{RCNN}^{S}(f_{r}^{S})$ and $d_{r}^{T}=F_{RCNN}^{T}(f_{r}^{T})$ of each region, so that the entire detection results of the model are: $V_{{{x}_{t}}}^{S}=\left\{ d_{r}^{S} \right\}$ and $V_{{{x}_{t}}}^{T}=\left\{ d_{r}^{T} \right\}$.
+
+We define the prediction of regional consistency as a measure of the distance between the prediction results of the teacher model and the student model. Firstly, perform region is preprocessed and the confidence threshold is set to filter out all low-confidence foreground regions and background regions. The average of the mean square error is adopted to calculate the region-level prediction loss of the two models: 
+\begin{equation}
+{{L}_{\operatorname{Re}}}=\frac{1}{\left\vert R_{x}^{T} \right\vert}\cdot \sum\limits_{r\in R_{x}^{T}}{\left\| d_{r}^{S}-d_{r}^{T}\right.}\left\| _{2}^{2} \right.
+\label{eq:05}
+\end{equation}
+where $R_{x}^{T}$ represents the region proposals generated by the teacher’s $RPN$ network,  $d_{r}^{S}$ and $d_{r}^{T}$ represent the detection probability of the teacher model and student model respectively for the region.
+
+%
+%=========================================================================================================================
+%
+\subsubsection{Inter-graph consistency}
+
+Regional consistency of the above-mentioned aims to achieve feature alignment between the regions of the two models. We hope not only to achieve feature alignment from a macro perspective but also to reduce the differences caused by the structure in the graph. Therefore, the idea of regularization of graph structure is born.
+
+Firstly, the picture is input into the model and the relationship diagram $G_{{{x}_{i}}}^{S}=\left\{ V_{{{x}_{i}}}^{S},a_{x}^{S} \right\}$ is obtained through calculation, where $V_{{{x}_{i}}}^{S}$ represents the probability set of all regions, $a_{x}^{S}$ represents the graph’s affinity matrix obtained by the student model. The similarity ${{\left( a_{x}^{S} \right)}_{{{r}_{i}}{{r}_{j}}}}$ between every two regions in the figure is obtained, where ${{r}_{i}},{{r}_{j}}\in R_{x}^{S}$, which represents two different regions in the figure. Region features are extracted through the ROI-pooling layer and represented by $f_{{{r}_{i}}}^{S}$, and the corresponding feature is converted into a fixed-size dimension. The calculation formula of cosine similarity is introduced to obtain the similarity between every two regions, and generate an affinity matrix of the student model. 
+\begin{equation}
+{{\left( a_{x}^{S} \right)}_{{{\text{r}}_{i}}{{r}_{j}}}}={f_{{{r}_{i}}}^{S}\cdot f_{{{r}_{j}}}^{S}}/{( {{ \|f_{{{r}_{i}}}^{S}\| }_{2}} \cdot {{ \|f_{{{r}_{j}}}^{S}\| }_{2}})}\;
+\label{eq:06}
+\end{equation}
+
+where $f_{{{r}_{i}}}^{S}$ and $f_{{{r}_{j}}}^{S}$ respectively represent the feature map with fixed dimensions obtained by the student model through the ROI-pooling layer processing, and ${{\left( a_{x}^{S} \right)}_{{{r}_{i}}{{r}_{j}}}}$ represents the calculated similarity between every two regions. 
+The calculation method of the affinity matrix of the teacher model is the same as above, and two affinity matrices can be obtained through the above calculation. Therefore, the consistency difference between graphs can be defined as the mean square error between two affinity matrices, and the calculation formula is as follows:
+\begin{equation}
+{{L}_{Et}}=\frac{1}{{{\left\vert R_{x}^{T} \right\vert}^{2}}}\cdot \left\| a_{x}^{S}-a_{x}^{T} \right\|_{2}^{2}
+\label{eq:07}
+\end{equation}
+where $a_{x}^{S}$ and $a_{x}^{T}$ represent the affinity matrix of the student model and the teacher model respectively, avd $R_{x}^{T}$ represents the region proposals generated by the teacher's RPN network.
+
+%
+%=========================================================================================================================
+%
+\subsubsection{Intra-graph consistency}
+
+
+In traditional domain adaptive methods, some of the work introduced pseudo-labels to participate in semi-supervised learning, aiming to provide more accurate guidance and improve model performance. Inspired by this work, we hope to apply the principle of consistency to guide the student model through the pseudo-labels generated by the teacher model. First, we use the initial pre-training source model as benchmark to learn knowledge and generate pseudo-labels ${{l}_{r}}=\arg {{\max }_{k\in C}}\left( d_{{{r}_{k}}}^{T} \right)$ for each region proposal $\text{r}_{x}^{T}\in {{R}^{T}}$ on the teacher-side, where $C$ represents the total number of categories in the dataset, $k$ represents a specific category, and $d_{{{r}_{k}}}^{T}$ represents the probability of the predicting. Then, the supervision matrix $M_{x}^{T}$ of  $(\vert\text{R}_{\text{x}}^{T}\vert \times \vert\text{R}_{\text{x}}^{T}\vert)$ can be generated in the following way to determine whether every region belongs to the same category: 
+\begin{equation}
+{{(M_{x}^{T})}_{i,j}}=\left\{ \begin{matrix}
+1\text{     if  }{{l}_{{{r}_{j}}}}={{l}_{{{r}_{i}}}}  \\
+0\text{    otherwise}  \\
+\end{matrix} \right.
+\label{eq:08}
+\end{equation}
+
+Where ${{l}_{{{r}_{i}}}}$ and ${{l}_{{{r}_{j}}}}$ represent the pseudo-labels generated in a specific area, and ${{(M_{x}^{T})}_{i,j}}$ represents the generated supervision matrix with $i$ rows and $j$ columns.
+\begin{equation}
+{{L}_{In}}=\frac{\sum\limits_{1\le i,j\le \left\vert \text{R}_{\text{x}}^{T} \right\vert}{{{\left( M_{x}^{T} \right)}_{i,j}}\cdot \left( 1-{{\left( a_{x}^{S} \right)}_{{{r}_{i}}{{r}_{j}}}} \right)}}{MAX\left( 1,\sum\limits_{1\le i.j\le \left\vert R_{x}^{T} \right\vert}{{{\left( M_{x}^{T} \right)}_{i,j}}} \right)}
+\label{eq:09}
+\end{equation}
+
+where ${{\left( a_{x}^{S} \right)}_{{{r}_{i}}{{r}_{j}}}}$ represents the calculated similarity between every two regions in the student model, ${{\left( M_{x}^{T} \right)}_{i,j}}$ represents the generated supervision matrix with $i$th rows and $j$th columns, and $1\le i,j\le \left\vert \text{R}_{\text{x}}^{T} \right\vert$ represent each region in the teacher model.
+
+%
+%=========================================================================================================================
+%
+\subsection{Overall Objective Function}
+
+\begin{algorithm}[tb]
+	\caption{Algorithm for source-free adaptation object detection task
+		\textbf{Parameter}: Database ${{D}_{t}}$ represents the unlabeled target domain dataset. $G(\cdot )$ represents data random augmentation. ${{\theta }_{t}}$ represents the weight parameter of the teacher model, initialize the trade-off parameters $\alpha $, weight smoothing parameter $\lambda $. Pre-train parameter $\Re$. ${{S}_{\text{model}}},{{T}_{\text{model}}}$ represent the student model and teacher model respectively. $\left\{ Y_{i,k}^{T} \right\}_{i=1}^{{{N}_{t}}}$ represents the pseudo-labels generated by the teacher at the $kth$ iteration. ${{P}_{k}}(x_{i}^{T})$ represents the confidence threshold.}
+	\label{alg:algorithm}
+	\textbf{Input}: Unannotated data ${{D}_{t}}=\left\{ {{x}_{i}} \right\}_{i=1}^{{{N}_{t}}}$ \\	
+	\textbf{Output}: Detector model parameter C, Predictions 
+	\begin{algorithmic}[1] %[1] enables line numbers
+		\State Initialize the student model ${{S}_{\text{model}}}$ and teacher model ${{T}_{\text{model}}}$ with $\Re$
+		\State Freeze $autograde$ for ${{T}_{\text{model}}}$
+		\For{epoch=1 to N}
+		\For{i=1 to n}
+		\State Generate samples via $x_{i}^{T},x_{i}^{S}\leftarrow G\left( {{x}_{i}} \right)$ randomly
+		\State Use $x_{i}^{S}$ as the input of ${{S}_{\text{model}}}$, and $x_{i}^{T}$ as input of ${{T}_\text{model}}$
+		\State Generate $R_{x}^{T}$ with ${{T}_{\text{model}}}'s\text{ }RPN$ and shared with ${{S}_\text{model}}$
+		\State Update ${{S}_{\text{model}}}$ with Eq~\ref{eq:11}
+		\State Update ${{T}_{\text{model}}}$ from ${{S}_{\text{model}}}$ with  Eq~\ref{eq:10}
+		\If{starting adaptation}
+		\State Train ${{S}_{\text{model}}}$ with pseudo-labels $\left\{ Y_{i,k}^{T} \right\}_{i=1}^{{{N}_{t}}}$
+		\State Update ${{S}_{\text{model}}}$ via ${{\theta }_{s}}\leftarrow Adam\left( {{\nabla }_{{{\theta }_{s}}}}\left( \alpha {{L}_{dist}}+\beta \left( {{\text{L}}_{\operatorname{Re}}}+{{L}_{Et}}+{{L}_{In}} \right) \right),{{\theta }_{s}},\alpha ,\beta  \right)$
+		\State  Update ${{T}_{\text{model}}}$ via ${{\theta }_{t}}=\lambda {{\theta }_{t-1}}+\left( 1-\lambda  \right){{\theta }_{s}}$, $\lambda $
+		\EndIf 
+		\EndFor
+		\State Generate pseudo-labels $\left\{ Y_{i,k}^{T} \right\}_{i=1}^{{{N}_{t}}}$ for the next iteration
+		\State Update ${{P}_{k}}(x_{i}^{T})$ via Eq~\ref{eq:03} and Eq~\ref{eq:04}
+		\EndFor
+		\State \textbf{Get trained model}
+		
+	\end{algorithmic}
+\end{algorithm}
+
+Based on the framework model proposed, we introduce weight regularization and knowledge distillation mechanisms to learn domain-invariant representations, and introduce entropy minimization to iteratively filter false pseudo-labels for ``pseudo-supervised" learning. First, the weights of the teacher model are frozen, and there is only one source for the weight update of the teacher model, which is the exponential moving average of the student network. Therefore, the teacher model's network weight can be considered a combination of the current student model and the earlier version. The network parameter update of the teacher model is obtained by Eq~\ref{eq:10}:
+\begin{equation}
+{{\theta }_{t}}=\lambda {{\theta }_{t-1}}+\left( 1-\lambda  \right){{\theta }_{s}}
+\label{eq:10}
+\end{equation}
+where ${{\theta }_{t-1}}$ and ${{\theta }_{t}}$ represent the upper training of the teacher model and the training parameters of this layer respectively, ${{\theta }_{s}}$ represents the currently updated network parameters of the student model, and $\lambda$ represents the weight smoothing parameter, which is set to 0.99.	
+
+Secondly, the invariant features of the domain are learned from the perspective of the student model, and the network parameters are optimized to reduce the model deviation, including one distillation loss and three regularization losses. One introduces a knowledge distillation strategy to achieve pixel-level feature alignment. The other one implements region-level feature alignment, inter-graph structure matching and intra-graph feature alignment for the relation diagrams generated in the Faster RCNN framework. The algorithm description is shown in Alg.~\ref{alg:algorithm}. The overall training loss is expressed as follows:
+\begin{equation}
+L=\alpha {{L}_{dist}}+\beta \left( {{L}_{\operatorname{Re}}}+{{L}_{Et}}+{{L}_{In}} \right)
+\label{eq:11}
+\end{equation}
+where $\alpha ,\beta$ is the tuning parameter.
+
+
+%
+%=========================================================================================================================
+%
+\section{Experiments}\label{sec:sec4}
+\subsection{Dataset and Experimental Settings}
+\subsubsection{Experimental parameter settings} 
+
+We use Faster RCNN as the fundamental network for object detection, which the experimental setup is consistent with \cite{chen2018domain}. The source domain data is only used in the pre-training step. The experimental setup follows Faster RCNN \cite{chen2018domain}, and all source data participate in training. For the domain adaptation phase, the student and teacher models are first initialized by the pre-trained source domain model. In the experiment, batchsize is set to 1, and ResNet101 is added as the backbone of the network model to verify the model's performance. In all experiments, we use 4 GTX 1080 Ti with 11GB memory for training, the initial learning rate is set to 0.0001, the momentum is set to 0.9, the overall training loss $\alpha $ is set to 0.2, $\beta$ is set to 0.999. The teacher model is the final model used for testing. We give the average precision AP and mAP of all categories in the dataset, where AP is defined as $AveragePrecision=\sum{Precision/N\left( TotalImage \right)}$ and mAP is defined as $MeanAveragePrecision\text{ }=\sum{AveragePrecision}/N\left( Classes \right)$.
+
+To verify the feasibility of the proposed method, we present the experimental results of ablation experiments and evaluate the experimental effects of the developed modules quantitatively.
+
+\subsubsection{Dataset Setting and Enhancement}
+
+ In the experiment, we use Cityscapes\cite{cordts2016cityscapes}, Foggy Cityscapes, SIM10K and other datasets to participate in the training, and verify the effectiveness of our method on three datasets with different styles. Fig.\ref{fig3} is a sample diagram of 3 types of data augmentation, which realize cross-domain object detection in three different scenarios. In the experiment, several basic data augmentation strategies are used to process the input samples of the target domain, including techniques such as color jitter, gaussian blur and grayscale. This method adds noise by randomly adjusting the sample parameters. The input is the same image, but the input in different epochs is constantly changing, that is, the input-output mapping is not fixed, which is equivalent to the consistent regularization of the same unlabeled image between different epochs. The model does not easily overfit the noise in the pseudo-labels in this case. At the same time, the student model learns from the images after data enhancement processing, which increases the difficulty of learning. It can learn more abundant representations through additional information, and improve the robustness of the model.
+%%%
+%%% Figure 3
+%%%
+\begin{figure}
+	\includegraphics[width=\textwidth]{Img3.eps}
+	\caption{Sample diagram of dataset augmentation, the first row represents the original image of the data sample, and the following is the data augmentation image.} \label{fig3}
+\end{figure}
+%
+%=========================================================================================================================
+%
+\subsection{Comparison Results} 
+Our experiments complete three sets of adaptive results. The ``baseline" in the experiment means that no DA adjustment is made, and the Faster RCNN network without an alignment module is used to train the model on the source domain dataset to obtain the detection result in the target domain. the ``oracle" represents the accuracy of training a model using the target domain image with label information and detecting the target domain image. We introduce DA Faster-RCNN\cite{chen2018domain}, BDC-Faster\cite{saito2019strong}, MAF\cite{he2019multi} and SFOD\cite{li2020free} traditional domain adaptive methods for comparison in the task. Experiments examine the average accuracy of these methods under various categories and compare them with our source-free domain adaptive method. Although the detection effect of our method is slightly lower than the object detection accuracy of partial domain adaptation, it has good adaptability and can well solve the defect problem of detection in the source-free domain.
+
+\subsubsection{Normal weather to Foggy weather} 
+In this experiment, the Cityscapes\cite{cordts2016cityscapes} dataset is used as the source domain, we use it to pre-train a source model and provide it to our student model. Foggy Cityscapes\cite{sakaridis2018semantic} is an unlabeled target domain dataset, which contains pictures of outdoor street scenes from 50 different cities. There are 5000 high-quality pixel-level annotated images, including 2975 images in the training dataset, 500 images in the verification dataset, and 1525 images in the test dataset, including 19 categories. The Foggy Cityscapes dataset is based on the Cityscapes image, it is a synthetic foggy dataset that simulates real scenes. There are three levels of fog density representation, and the file name suffix will explicitly represent the density level. Although there is a one-to-one correspondence between the Cityscapes dataset and the Foggy Cityscapes dataset, our model does not use this correspondence during the training process, but randomly obtains picture information and sends it into the model to participate in training.
+
+We obtained the object detection results in the adaptive process from Cityscapes to Foggy Cityscapes (Table~\ref{table:1}), including the average precision of each category ($AP$) and the average precision of all categories ($mAP$). The experimental results show that the baseline accuracy is only 22.6\%, and our model is 10.4\% higher than the baseline. Due to the similarity between the source domain and the target domain, the optimization effect of the model is remarkable, and its training effect exceeds some traditional domain adaptation methods, which proves the effectiveness of the method.
+
+
+		
+\begin{table}[]
+	\begin{center}{	
+			\caption{$Cityscapes\to Foggy\text{ }Cityscapes\text{ }adaptation$ The average precision of all categories under different cross-domain object detection methods ($mAP$)}		\label{table:1}
+			\setlength{\tabcolsep}{4pt}		%改变列间距
+			\begin{tabular}{ccccccccccc}
+				
+				\hline
+				Methods	 &Person	&Rider	&Car	&Truck	&Bus	&Train	&Motor	&Bicycle	&mAP        \\ \hline
+				
+				baseline   &24.2	&23.0	&34.2	&15.0	&26.4	&14.3	&15.7	&28.1	&22.6    \\ \hline
+				
+				DA-Faster\cite{chen2018domain}  &25.0	&31.0	&40.5	&22.1	&35.3	&20.2	&20.0	&27.1	&27.6 \\
+				
+				BDC-Faster\cite{saito2019strong}    &26.4 	&37.2	&42.4	&21.2	&29.2	&12.3	&22.6	&28.9	&27.5   \\
+				
+				Selective-Faster\cite{zhu2019adapting}  &33.5	&38.0	&48.5	&16.5	&39.0	&23.3	&28.0	&33.6	&33.8 \\ 
+				
+				MAF\cite{he2019multi} 	&28.2	&39.5	&43.9	&23.8	&39.9	&33.3	&29.2	&33.9	&34.0  \\ \hline
+				
+				SFOD(SED)\cite{li2020free}	&11.8	&25.3	&40.4	&34.3	&21.7	&\textbf{34.5}	&32.6	&44.0	&30.6  \\
+				
+				SFOD(Ideal)\cite{li2020free} 	&22.3	&\textbf{44.0}	&38.2	&31.4	&15.1	&25.7	&\textbf{34.6}	&36.8	&31.0 \\
+				
+				SMT\cite{zhang2021source} 	&\textbf{35.5}	&12.1	&44.4	&\textbf{39.6}	&\textbf{34.5}	&33.0	&21.6	&\textbf{47.3}	&\textbf{33.5}  \\
+				
+				Ours	&34.3	&30.1	&\textbf{45.1}	&30.6	&28.8	&28.7	&25.1	&41.5	&33.0   \\ \hline
+				
+				Oracle     &34.2	&50.1	&55.3	&38.0	&46.9	&32.4	&39.4	&53.2	&43.7      \\ \hline
+				
+		\end{tabular}}	
+	\end{center}
+\end{table}
+
+
+%
+%=========================================================================================================================
+%
+\subsubsection{Adaptation from Virtual to Real Images} In this experiment, the SIM10K dataset is used as the pre-training source model, and Cityscapes\cite{cordts2016cityscapes} is used as the unlabeled target domain dataset. The SIM10K dataset contains synthetic images in 10k computer game rendering. It contains 10,000 annotated images with the category ``Car", so we only chose the category ``Car" to participate in the experiment.
+
+Table~\ref{table2} compares the performance of cross-domain detection from the synthetic dataset to the real dataset. We only use the category ``Car" to participate in the experiment. As can be seen from the table, our model’s AP reaches 42.8\%, which is 4.3\% higher than DA-Faster, and 0.3\% higher than the source-free object detection method SFOD. Therefore, experiments show that style transfer in virtual-reality can help the model better capture the discrepancies between graphs and improve the detection accuracy.
+
+\begin{table}[]
+	\begin{center}{	
+			\caption{The average precision (AP) of the ``Car" category in the cross-domain detection of the  $SIM10K\to Cityscapes\text{ }adaptation$}		\label{table2}
+			\begin{tabular}{cc}
+				
+				\hline
+				Methods	   &AP on Car       \\ \hline
+				baseline	&33.1       \\ \hline
+				DA-Faster\cite{chen2018domain}	&38.5       \\
+				SW-Detection\cite{saito2019strong}	&40.1       \\
+				MAF\cite{he2019multi}		&41.1       \\
+				AT-Faster\cite{he2020domain}	&42.1       \\ \hline
+				SOAP\cite{xiong2021source}	&40.8       \\
+				SFOD(SED)\cite{li2020free}	&42.3       \\
+				SFOD(Ideal)\cite{li2020free}	   &42.5       \\
+				Ours	&\textbf{42.8}       \\ \hline
+				Oracle	&56.9       \\ \hline
+				
+		\end{tabular}}	
+		
+	\end{center}
+\end{table}
+
+%
+%=========================================================================================================================
+%
+\subsubsection{Adaptation from Real to Artistic Images}
+In this experiment, the Pascal VOC dataset is used as the pre-training source model, which contains 20 common real-world categories. We use Pascal VOC's 5011 training set (2501 training set, 2510 validation set) in the experiment, and the Watercolor2k\cite{inoue2018cross} dataset is used as the target domain to be tested. It contains six categories of watercolor-style artistic pictures, totaling 2000 pictures. In the experiment, we only use the six categories shared by the two datasets for training.
+
+As shown in Table~\ref{table:3}, we report the detection results of the dataset under 6 categories and compare them. Our model is 5.7\% higher than the baseline, better than the traditional domain adaptive object detection method, and the source-free object detection accuracy of SOAP, proving the feasibility and applicability of our method in different application scenarios.
+
+\begin{table}[]
+	\begin{center}{	
+			\caption{The average precision (mAP) of the cross-domain detection of the $Pascal\text{ }VOC\to Watercolor\text{ }adaptation$.}\label{table:3}
+			\begin{tabular}{cccccccc}
+				
+				\hline
+				Methods 	&Bike	&bird	&car	&cat	&dog	&person	  &mAP        \\ \hline		
+				baseline   &74.6	&48.4	&45.1	&28.9	&22.0	&53.1	&45.4    \\ \hline		
+				DA-Faster\cite{chen2018domain}	&75.2	&40.6	&48.0	&31.5	&20.6	&60.0	&46.0  \\
+				BDC-Faster\cite{saito2019strong}	&68.6	&48.3	&47.2	&26.5	&21.7	&60.5	&45.5    \\ \hline
+				SOAP\cite{xiong2021source}	&\textbf{77.7}	&43.2	&40.1	&\textbf{48.2}	&\textbf{38.8}	&55.4	&50.6   \\
+				Ours	&76.5	&\textbf{48.9}	&\textbf{45.2}	&43.2	&36.2	&\textbf{56.5}	&\textbf{51.1}   \\ \hline
+				
+		\end{tabular}}	
+		
+	\end{center}
+\end{table}
+
+%
+%=========================================================================================================================
+%
+\subsection{Ablation experiment}
+We performed several ablation experiments to examine the contribution of each module to the performance of this object detector. Our model consists of 3 modules. While ensuring that all settings are exactly the same, we add each module in turn to study the effectiveness of each module. Table~\ref{table:4} shows the domain adaptive results of each module from Cityscapes to Foggy Cityscapes, where WR represents Weight Regulation, KD represents Knowledge Distillation, and EM represents Entropy Minimization. We can observe that each module can improve the performance of the model. The KD module implements the pixel-level class probability prediction of the feature map, combines the other two modules respectively, trains and tests their influence on the model. It can be seen from Table~\ref{table:4} that the baseline without any DA adjustment is only 22.6\%, and the accuracy is increased to 4.4\% after adding the EM module. Obviously, iteratively filtering pseudo-labels provides more accurate guidance for the mean teacher framework, prompting the generation of more valuable pseudo-labels in subsequent iterations and improving the overall performance of the model.
+
+
+Fig.\ref{fig4} shows the detection accuracy curves of pseudo-label generation under different confidence thresholds. During iterative training on the dataset, we train the network with iteratively generated pseudo-labels. To verify the effect of entropy changes on accuracy, we use the confidence threshold as a controllable variable to conduct experiments on the SIM10K to Cityscapes datasets, and obtained the detection accuracy curves under different confidence thresholds, verifying the effect of entropy changes on the experimental results.
+\begin{figure}
+	\centering	
+	\includegraphics[width=0.7\textwidth]{Img4.eps}
+	\caption{Detection accuracy curves of pseudo-label generation under different confidence thresholds. In the SIM10K to Cityscapes domain adaptation experiment, the detection accuracy AP varies with the threshold} \label{fig4}
+\end{figure}
+
+\begin{table}[]
+	\caption{Analysis of ablation experiments from Cityscapes to Foggy Cityscapes.}
+	\centering
+	\setlength{\tabcolsep}{5mm}
+	\begin{tabular}{c|c|c|c}
+		\hline
+		WR  	&EM 	&KD 	&mAP                      \\ \hline
+		
+		\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & \multicolumn{1}{c}{22.6} \\ \hline
+		
+		\multicolumn{1}{c|}{$\surd$} & \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{}  & \multicolumn{1}{c}{24.6}  \\ \hline
+		
+		\multicolumn{1}{c|}{$\surd$} & \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{$\surd$} & \multicolumn{1}{c}{26.8} \\ \hline
+		
+		\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{$\surd$}& \multicolumn{1}{c|}{}& \multicolumn{1}{c}{27.0} \\ \hline
+		
+		\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{$\surd$}& \multicolumn{1}{c|}{$\surd$}& \multicolumn{1}{c}{31.3} \\ \hline
+		
+		\multicolumn{1}{c|}{$\surd$} & \multicolumn{1}{c|}{$\surd$}& \multicolumn{1}{c|}{$\surd$}& \multicolumn{1}{c}{33.0} \\ \hline		
+	\end{tabular}
+	\label{table:4}
+\end{table}
+
+
+
+%
+%=========================================================================================================================
+%
+\subsection{Hyperparametric Analysis}
+To analyze the influence of parameters on the proposed method, we performed a parameter analysis in the Cityscapes to Foggy Cityscapes scene adaptation. Under the condition of ensuring that all settings are exactly the same, the experimental analysis results of parameters $\lambda$ and $\beta $ are given. For the parameter $\lambda$, we have done 5 sets of experiments from 0 to 1.0. It can be observed that the left graph of Fig.\ref{fig5} shows the line graph of the detection results changing with the parameter $\lambda$. Obviously, when the value of $\lambda$ is 0, the parameters of the teacher model will be completely changed with the parameters of the student model and become a single model, which will affect the performance of our method. When $\lambda$ is 0.99, we are most affected by the smoothing coefficient parameter $\lambda$, which is the best performance. When $\lambda$ is close to 1, the teacher model is difficult to train, so we take a value of 0.99 in our experiments. Fig.\ref{fig5} on the right is the analysis result of the value of parameter $\beta$. The value range is set from 0.01 to 0.7, the overall trend is stable and the detection accuracy is good. Considering the experimental results of the parameter $\beta $, we take it as 0.1 in our experiment. We employ the same parameter settings in domain adaptation experiments in other scenarios, showing the robustness and effectiveness of our method.
+
+%%%
+%%% Figure 4
+%%%
+\begin{figure}
+	
+	\includegraphics[width=\textwidth]{Img5.eps}
+	\caption{Hyperparameter Analysis} \label{fig5}
+\end{figure}
+%
+%=========================================================================================================================
+%
+\subsection{Visualization of results}
+
+Fig.\ref{fig6} shows two groups of cross-domain object detection results in 3 different scenarios. The three rows of images from top to bottom represent Cityscapes to Foggy Cityscapes, SIM10K to Cityscapes and Pascal VOC to Watercolor. Among the three sets of experimental scenarios we applied, it can be observed that the detection accuracy of each category is improved, and the probability of misprediction is reduced. Compared with the domain adaptive method, the experimental results are comparable, and can effectively demonstrate the effectiveness of our method on object detection under source-free domain conditions.
+
+Fig.\ref{fig7} shows the visualizations using the t-SNE algorithm. The scene of the experiment is from Cityscapes to Foggy Cityscapes, with a total of 8 different colors to label the categories. The left is the source-only model, the right is the training result of our method, it can be seen the distribution gap between the source domain and the target domain. After model training, the problem of uneven sample distribution and unclear boundaries is optimized.
+%%%
+%%% Figure 5
+%%%
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=0.7\textwidth]{Img6.eps}
+	\caption{Cross-domain object detection results of three different datasets, two sets of experiments(A and B) show the visualization results of the DA-Faster model and our model on the dataset under different scenarios, respectively.} \label{fig6}
+\end{figure}
+
+%%%
+%%% Figure 6
+%%%
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\textwidth]{Img7.eps}
+	\caption{Visualizations of feature map using t-SNE algorithm. The scene is from Cityscapes to Foggy Cityscapes. Left: the result obtained with the source-only model. Right: the result obtained with our proposed model. It can be seen that the classification distributions of the source and target domains can be well aligned, and the problem of uneven sample distribution and unclear boundaries is optimized.} \label{fig7}
+\end{figure}
+
+%
+%=========================================================================================================================
+
+\section{Conclusion}\label{sec:sec5}
+
+In our work, in order to solve the problems of data privacy protection, limited storage space or high labor costs in the process of experimental processing and training. We propose a model that uses entropy minimization for threshold tuning, iteratively filters the generated pseudo-labels to make the model more influenced by the correct pseudo-labels during training, and uses the knowledge distillation mechanism and the weight regularization module to generate the suitable target domain detector. We use the mean average precision($mAP$) as a measure to verify the performance of our method on different styles of datasets, and use experiments to prove the feasibility of our proposed method. Although our method outperforms many source-based DA models, it has to be admitted that in the case of no source domain dataset, the dataset of a single source domain scenario cannot fully cover the target domain features, and it is still very important to choose an appropriate source model. In future work, we will continue to study the application of DA methods in the source-free domain, hoping to combine all source and target domain datasets to improve the robustness of the model in the multi-source-free DA.
+
+%
+%=========================================================================================================================
+%
+\bmhead{Acknowledgments}
+
+ This work was supported by Joint Fund of Natural Science Foundation of Anhui Province in 2020 (2008085UD08), Anhui Provincial Key R\&D Program (202004a05020004), Open fund of Intelligent Interconnected Systems Laboratory of Anhui Province (PA2021AKSK0107), Intelligent Networking and New Energy Vehicle Special Project of Intelligent Manufacturing Institute of HFUT (IMIWL2019003, IMIDC2019002).
+
+\section*{Declarations}
+
+\begin{itemize}
+	\item Availability of data and materials
+\end{itemize}
+
+Data openly available in a public repository. 
+
+
+\bigskip\noindent
+Cityscapes: \url{https://www.cityscapes-dataset.com/downloads/}
+
+\bigskip\noindent
+Pascal VOC: \url{http://host.robots.ox.ac.uk/pascal/VOC/}
+
+\bigskip\noindent
+SIM10K: \url{https://fcav.engin.umich.edu/projects/driving-in-the-matrix}
+
+\bibliographystyle{sn-aps}
+\bibliography{sn-bibliography}% common bib file
+%% if required, the content of .bbl file can be included here once bbl is generated
+%%\input sn-article.bbl
+
+%% Default %%
+%%\input sn-sample-bib.tex%
+
+\end{document}
